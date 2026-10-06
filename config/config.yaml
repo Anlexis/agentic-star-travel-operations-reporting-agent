@@ -1,0 +1,38 @@
+# Runtime parameters — loaded by the agent registry and passed as Graph(config=...).
+# Separate from config/agent.yaml, which is the static manifest.
+
+# Retry budget for the backbone.
+max_retry: 3
+# Request timeout in seconds, honoured by framework service clients.
+timeout_s: 30
+
+# Reporting bounds. Forwarded to the domain pipeline by
+# TravelReportGraphNode._parent_config() and republished into inner state by
+# DomainWorkflowGraph._extra_initial_state(); the data-collection node, the
+# analysis node and the output gate all read the block from inner state, so
+# every value below is live in the hosted deployment and in the standalone
+# entry point alike.
+reporting:
+  # Share of total channel revenue below which a channel is flagged for review.
+  # 0.05 = 5%.
+  underperform_threshold: 0.05
+  # Maximum number of sales channels accepted in one request. The channel map
+  # arrives from the caller, so it is caller-sized and is capped here rather
+  # than left to grow with the payload.
+  max_channels: 200
+  # Maximum characters for any caller-supplied label rendered into the report
+  # (reporting period, channel name).
+  max_label_chars: 32
+  # Upper bound on the released report, in characters. A report larger than a
+  # monthly operations summary can be indicates the pipeline is re-emitting the
+  # source payload rather than summarising it.
+  max_report_chars: 200000
+  # Inclusive bounds for RevPAR in JPY. A value outside this range is a
+  # malformed source record, not a room that earns that much.
+  min_revpar_jpy: 0
+  max_revpar_jpy: 100000000
+  # Inclusive bounds for a per-channel revenue figure in JPY.
+  min_revenue_jpy: 0
+  max_revenue_jpy: 1000000000000
+  # Upper bound on a per-channel booking count.
+  max_bookings: 100000000
